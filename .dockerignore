@@ -1,0 +1,18 @@
+# Ignore Git history
+.git
+.gitignore
+
+# Ignore Virtual Environment (Docker installs its own packages)
+venv/
+.venv/
+
+# Ignore MLflow logs (Not needed inside the API container)
+mlruns/
+
+# Ignore Jupyter Notebooks (Not needed in production)
+notebooks/
+
+# Ignore IDE settings
+.vscode/
+__pycache__/
+*.pyc
