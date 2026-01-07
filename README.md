@@ -11,6 +11,7 @@ This project implements a **Semantic Search Engine** for industrial equipment. I
 * **Calibration:** Confidence score calibration to filter low-quality matches.
 
 ## Project Structure
+```bash
 ├── app/
 │   ├── main.py            # FastAPI Application (Logic & Endpoints)
 │   └── artifacts/         # Stores the FAISS index and Product Data
@@ -23,6 +24,7 @@ This project implements a **Semantic Search Engine** for industrial equipment. I
 ├── Dockerfile             # Instructions to build the container
 ├── requirements.txt       # Python dependencies
 └── README.md
+```
 
 ## How to Run
 ### 1. Build the Docker Image (The Backend)
