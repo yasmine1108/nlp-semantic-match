@@ -2,29 +2,27 @@ import streamlit as st
 import requests
 import json
 
-# Configuration
-API_URL = "http://localhost:8000/match"  # Where your API lives
+API_URL = "http://localhost:8000/match" 
 
-st.set_page_config(page_title="Industrial Search Tool", page_icon="🔧")
+st.set_page_config(page_title="Industrial Search Tool")
 
-# --- UI Header ---
-st.title("🔧 Smart Equipment Search")
+# Header
+st.title("Smart Equipment Search")
 st.markdown("Find the right part using **semantic descriptions** (e.g., 'yellow hard hat').")
 
-# --- Sidebar Controls ---
+# Sidebar Controls 
 with st.sidebar:
     st.header("Search Settings")
     k_neighbors = st.slider("Number of Results", min_value=1, max_value=10, value=3)
 
-# --- Main Search Input ---
+# Main Search Input 
 query = st.text_input("Describe the equipment you need:", placeholder="Type here...")
-search_button = st.button("🔍 Search Database")
+search_button = st.button(" Search Database")
 
-# --- Logic ---
 if search_button and query:
     with st.spinner("Searching AI Database..."):
         try:
-            # Send request to your FastAPI backend
+            # Send request to FastAPI backend
             payload = {"query": query, "k": k_neighbors}
             response = requests.post(API_URL, json=payload)
             
@@ -37,7 +35,7 @@ if search_button and query:
                 else:
                     st.success(f"Found {len(results)} matches!")
                     
-                    # Display results neatly
+                    # Display results 
                     for item in results:
                         # Color code based on score
                         score = item['score']
@@ -52,4 +50,4 @@ if search_button and query:
                 st.error(f"Error {response.status_code}: {response.text}")
                 
         except requests.exceptions.ConnectionError:
-            st.error("🚨 Could not connect to the API. Is the Docker container running?")
+            st.error(" Could not connect to the API. Is the Docker container running?")

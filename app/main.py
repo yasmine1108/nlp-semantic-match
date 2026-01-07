@@ -8,10 +8,10 @@ import os
 import unicodedata
 import numpy as np
 
-# --- 1. CONFIGURATION ---
+# CONFIGURATION 
 ARTIFACTS_DIR = os.path.join(os.path.dirname(__file__), "artifacts")
 THRESHOLD_SEMANTIC = 0.6  # If AI score is below 60%, try keyword search
-THRESHOLD_CALIBRATION = 100 # Scaling factor for display
+THRESHOLD_CALIBRATION = 100 
 
 class QueryRequest(BaseModel):
     query: str
@@ -19,19 +19,20 @@ class QueryRequest(BaseModel):
 
 app = FastAPI(title="Semantic Matching API (Hybrid)", version="2.0")
 
-# --- 2. HELPER FUNCTIONS (Task: Normalization) ---
+# Normalization
 def normalize_text(text: str) -> str:
     """
     Task: Normalize equipment names (remove noise, accents).
     Example: "Hélmet" -> "helmet"
     """
+    #check if it is an instance of str
     if not isinstance(text, str):
         return ""
     # Normalize unicode characters (remove accents)
     text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('utf-8')
     return text.lower().strip()
 
-# --- 3. LOAD ARTIFACTS ---
+# LOAD ARTIFACTS
 try:
     print("Loading model...")
     model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -45,19 +46,20 @@ try:
     # Pre-normalize database names for lexical search later
     df_products['normalized_name'] = df_products['name'].apply(normalize_text)
     
-    print("✅ System ready with Hybrid Retrieval!")
+    print(" System ready with Hybrid Retrieval!")
 except Exception as e:
-    print(f"❌ Error loading artifacts: {e}")
+    print(f" Error loading artifacts: {e}")
 
 @app.post("/match")
 def match_products(request: QueryRequest):
+    #check if query is empty
     if not request.query.strip():
         raise HTTPException(status_code=400, detail="Query cannot be empty")
 
-    # A. Normalize Input
+    # Normalize Input
     clean_query = normalize_text(request.query)
 
-    # B. Semantic Search (The "AI" part)
+    # Semantic Search
     query_vector = model.encode([request.query])
     faiss.normalize_L2(query_vector)
     D, I = index.search(query_vector, request.k)
@@ -67,14 +69,12 @@ def match_products(request: QueryRequest):
     # Process AI Results
     top_score = float(D[0][0])
     
-    # C. Hybrid Logic (Task: Semantic + Lexical Fallback)
-    # If the AI is unsure (score is low), checks for exact keyword matches
+    # If the Semantic score is low, use Lexical Fallback
     use_lexical_fallback = top_score < THRESHOLD_SEMANTIC
     
     if use_lexical_fallback:
-        print(f"⚠️ Low confidence ({top_score:.2f}). Triggering lexical fallback...")
-        # Simple Lexical Search: Does the product name contain the query words?
-        # In a real big project, we would use BM25/Elasticsearch, but this is enough for 1.5 weeks.
+        print(f" Low confidence ({top_score:.2f}). Triggering lexical fallback...")
+        # We use a simple strategy, if the normalized_name contains words from the query
         lexical_matches = df_products[
             df_products['normalized_name'].str.contains(clean_query, regex=False)
         ]
@@ -89,7 +89,7 @@ def match_products(request: QueryRequest):
                 "method": "Lexical Match (Fallback)"
             })
     
-    # Add Semantic Results (if not already added by lexical)
+    # Add Semantic Results that are not already added by lexical
     existing_ids = [r['id'] for r in results]
     
     for j, row_index in enumerate(I[0]):
@@ -97,10 +97,9 @@ def match_products(request: QueryRequest):
         p_id = int(product['id'])
         
         if p_id not in existing_ids:
-            # D. Calibration (Task: Calibrate scores)
-            # Cosine similarity is -1 to 1. We treat it as probability.
+            # Calibration of scores
             raw_score = float(D[0][j])
-            calibrated_score = max(0, raw_score) # Clip negatives
+            calibrated_score = max(0, raw_score) 
             
             results.append({
                 "id": p_id,
