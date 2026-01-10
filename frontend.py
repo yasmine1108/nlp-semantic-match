@@ -1,8 +1,9 @@
 import streamlit as st
 import requests
 import json
+import os
 
-API_URL = "http://localhost:8000/match" 
+API_URL = os.getenv("API_URL", "http://localhost:8000/match")
 
 st.set_page_config(page_title="Industrial Search Tool")
 

@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  backend-api:
+    build: .
+    container_name: api_container
+    command: uvicorn app.main:app --host 0.0.0.0 --port 80
+    ports:
+      - "8000:80"
+    networks:
+      - ai-network
+
+  frontend-ui:
+    build: .  
+    container_name: ui_container
+    command: streamlit run frontend.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://backend-api:80/match  
+    depends_on:
+      - backend-api
+    networks:
+      - ai-network
+
+networks:
+  ai-network:
+    driver: bridge

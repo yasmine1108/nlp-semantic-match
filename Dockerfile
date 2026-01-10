@@ -3,6 +3,7 @@ FROM python:3.9-slim
 WORKDIR /code
 
 COPY requirements.txt .
+COPY frontend.py .
 
 RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
 

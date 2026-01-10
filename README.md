@@ -27,6 +27,8 @@ This project implements a **Semantic Search Engine** for industrial equipment. I
 ```
 
 ## How to Run
+
+### 1. 
 ### 1. Build the Docker Image (The Backend)
 First, we build the container that holds the AI model and API using the command **docker build -t semantic-search-api .**
 ### 2. Run the API Container
@@ -47,5 +49,3 @@ Recall@1: 1.0 (100%)
 Recall@5: 1.0 (100%)
 
 MRR: 1.0
-
-Latency: ~0.02s
