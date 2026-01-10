@@ -30,7 +30,7 @@ This project implements a **Semantic Search Engine** for industrial equipment. I
 ### 1. Build the Docker Image (The Backend)
 First, we build the container that holds the AI model and API using the command **docker build -t semantic-search-api .**
 ### 2. Run the API Container
-Run the container and map it to port 8000 using the command **docker run -p 8000:80 semantic-search-api**
+Run the container and map it to port 8000 using the command **docker run -p 8000:80 semantic-search-api**.
 To verify, you can open your browser to http://localhost:8000/docs. You should see the Swagger UI (an interface provided by FastAPI to test the routes defined in the backend).
 
 ### 3. Run the User Interface (The Frontend)
