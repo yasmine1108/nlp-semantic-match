@@ -12,17 +12,32 @@ This project implements a **Semantic Search Engine** for industrial equipment. I
 
 ## Project Structure
 ```bash
+├── .dvc/                      
+├── .github/
+│   └── workflows/
+│       └── ci.yml             
 ├── app/
-│   ├── main.py            # FastAPI Application (Logic & Endpoints)
-│   └── artifacts/         # Stores the FAISS index and Product Data
+│   ├── main.py                # Backend Service (FastAPI)
+│   └── artifacts/             
 ├── data/
-│   ├── products.csv       # The official equipment database
-│   └── test_queries.csv   # Test set for evaluation
+│   ├── products.csv.dvc       
+│   ├── test_queries.csv.dvc  
+│   ├── .gitignore    
+│   ├── test_queries.csv      
+│   └── products.csv         
 ├── notebooks/
-│   └── experiment.ipynb   # Jupyter Notebook for Training & Evaluation
-├── mlruns/                # MLflow local tracking logs
-├── Dockerfile             # Instructions to build the container
-├── requirements.txt       # Python dependencies
+│   └── experiment.ipynb       # Experimentation & Evaluation
+├── venv/
+├── generate_data.py           # Script to generate synthetic catalogue
+├── docker-compose.yml         # Orchestrates Backend + Frontend containers
+├── Dockerfile                 
+├── requirements.txt           
+├── frontend.py
+├── test_normalization.py
+├── .dockerignore
+├── .dvcignore
+├── dvc-key.json
+├── .gitignore                 
 └── README.md
 ```
 
@@ -40,9 +55,3 @@ Open the browser and go to the url that best fits you to use and test the applic
 
 ## Evaluation Results
 We use a simple sample of official products catalogue dataset and users queries dataset which explains the very good results, obviously with more elaborated datasets the results would be more accurate but regardless the API is effective to match queries to products semantically and lexically.
-
-Recall@1: 1.0 (100%)
-
-Recall@5: 1.0 (100%)
-
-MRR: 1.0
