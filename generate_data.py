@@ -1,33 +1,130 @@
 import pandas as pd
 import os
 
-# Create the Official Equipment Database which include the correct items present in the warehouse
-products = [
-    {"id": 101, "name": "Bosch Professional Drill GSB 18V", "category": "Power Tools"},
-    {"id": 102, "name": "Makita Cordless Impact Driver", "category": "Power Tools"},
-    {"id": 103, "name": "Industrial Safety Helmet (Yellow)", "category": "Safety Gear"},
-    {"id": 104, "name": "3M Protective Safety Goggles", "category": "Safety Gear"},
-    {"id": 105, "name": "Fluke Digital Multimeter 117", "category": "Electronics"},
-    {"id": 106, "name": "Hydraulic Jack 5 Ton", "category": "Automotive"},
-    {"id": 107, "name": "Knipex High Leverage Pliers", "category": "Hand Tools"},
-    {"id": 108, "name": "Stanley FatMax Tape Measure 5m", "category": "Hand Tools"},
-    {"id": 109, "name": "DeWalt Circular Saw 184mm", "category": "Power Tools"},
-    {"id": 110, "name": "High Visibility Vest (Orange, L)", "category": "Safety Gear"}
+import random
+
+categories = {
+    "Power Tools": [
+        "Cordless Drill", "Impact Driver", "Angle Grinder", "Circular Saw",
+        "Jigsaw", "Rotary Hammer", "Heat Gun", "Power Sander"
+    ],
+    "Hand Tools": [
+        "Hammer", "Screwdriver Set", "Pliers", "Wrench Set",
+        "Tape Measure", "Utility Knife", "Hex Key Set"
+    ],
+    "Safety Gear": [
+        "Safety Helmet", "Safety Goggles", "Face Shield",
+        "High Visibility Vest", "Protective Gloves", "Ear Protection"
+    ],
+    "Electronics": [
+        "Digital Multimeter", "Laser Distance Meter",
+        "Clamp Meter", "Voltage Tester"
+    ],
+    "Automotive": [
+        "Hydraulic Jack", "Torque Wrench",
+        "Car Battery Charger", "Oil Filter Wrench"
+    ]
+}
+
+brands = [
+    "Bosch", "Makita", "DeWalt", "Milwaukee",
+    "Stanley", "Fluke", "Knipex", "3M"
 ]
 
-# These represent what a user might actually type to use for tests
-queries = [
-    {"query": "bosch drill 18v", "expected_id": 101},
-    {"query": "yellow hard hat", "expected_id": 103}, # Semantic match: Hard hat -> Helmet
-    {"query": "measure tape stanley", "expected_id": 108},
-    {"query": "protection glasses", "expected_id": 104},
-    {"query": "electric saw", "expected_id": 109}
-]
+def generate_products(count=300):
+    products = []
+    product_id = 1000
+
+    for _ in range(count):
+        category = random.choice(list(categories.keys()))
+        item = random.choice(categories[category])
+        brand = random.choice(brands)
+        model = f"{random.randint(10,99)}{random.choice(['V','X','Pro','Max'])}"
+
+        products.append({
+            "id": product_id,
+            "name": f"{brand} {item} {model}",
+            "category": category
+        })
+        product_id += 1
+
+    return products
+
+
+def generate_queries(products, count=300):
+    queries = []
+
+    semantic_templates = {
+        "Drill": [
+            "{brand} drill",
+            "{brand} cordless drill",
+            "{brand} power drill"
+        ],
+        "Helmet": [
+            "{brand} safety helmet",
+            "{brand} hard hat",
+            "{brand} head protection"
+        ],
+        "Goggles": [
+            "{brand} safety goggles",
+            "{brand} eye protection"
+        ],
+        "Tape Measure": [
+            "{brand} tape measure",
+            "{brand} measuring tape"
+        ],
+        "Saw": [
+            "{brand} circular saw",
+            "{brand} electric saw"
+        ],
+        "Multimeter": [
+            "{brand} multimeter",
+            "{brand} digital multimeter"
+        ],
+        "Pliers": [
+            "{brand} pliers",
+            "{brand} hand pliers"
+        ],
+        "Jack": [
+            "{brand} hydraulic jack",
+            "{brand} car jack"
+        ]
+    }
+
+    for _ in range(count):
+        product = random.choice(products)
+
+        # Extract brand (first word)
+        brand = product["name"].split()[0]
+
+        # Find matching keyword
+        keyword = next(
+            (k for k in semantic_templates if k in product["name"]),
+            None
+        )
+
+        if keyword:
+            query = random.choice(semantic_templates[keyword]).format(brand=brand.lower())
+        else:
+            # Fallback: brand + product type words
+            query = " ".join(product["name"].lower().split()[:2])
+
+        queries.append({
+            "query": query,
+            "expected_id": product["id"]
+        })
+
+    return queries
+
+
 
 # Ensure data directory exists
 os.makedirs("data", exist_ok=True)
 
 # Save to CSV
+products = generate_products(500)   
+queries = generate_queries(products, 500)  
+
 pd.DataFrame(products).to_csv("data/products.csv", index=False)
 pd.DataFrame(queries).to_csv("data/test_queries.csv", index=False)
 

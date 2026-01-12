@@ -22,4 +22,6 @@ app/artifacts/*.bin
 app/artifacts/*.pkl
 
  
-data/
+data/products.csv
+data/test_queries.csv
+dvc-key.json

@@ -10,7 +10,7 @@ import numpy as np
 
 # CONFIGURATION 
 ARTIFACTS_DIR = os.path.join(os.path.dirname(__file__), "artifacts")
-THRESHOLD_SEMANTIC = 0.6  # If AI score is below 60%, try keyword search
+THRESHOLD_SEMANTIC = 0.6  # If Semantic score is below 60%, try keyword search
 THRESHOLD_CALIBRATION = 100 
 
 class QueryRequest(BaseModel):
